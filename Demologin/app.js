@@ -65,8 +65,8 @@ app.post('/signup', function(req,res){
      password: req.body.password,
      phone: req.body.phone
    };
-   var detalis = new User(info);
-   detalis.save(function(err){
+   var details = new User(info);
+   details.save(function(err){
     if (err){
         console.log('error occured');
     }else{
