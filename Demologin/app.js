@@ -1,10 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const ejs = require("ejs");
-const http = require('http');
+const ejs = require("ejs");;
 const path = require('path');
 const app = express();
+const alert = require("alert");
 
 mongoose.connect('mongodb://localhost:27017/myapp', {useNewUrlParser: true});
 
@@ -24,10 +24,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const userSchema = new mongoose.Schema({
     name: String,
     password: String,
-    email:String,
-    phone:Number,
+    email: String,
+    phone: Number,
 });
- const comments = mongoose.model('book',userSchema)
+ const User = mongoose.model('book',userSchema)
 
 app.get('/',function(req,res){
     res.render('home')
@@ -35,16 +35,25 @@ app.get('/',function(req,res){
 app.post('/',function(req,res){
     var logininfo ={
      email :  req.body.email,
-     pass :  req.body.password
+     password :  req.body.password
+     
     };
-    var customerid = new comments(logininfo);
-    detalis.save(function(err){
-     if (err){
-         console.log('error occured');
-     }else{
-         console.log('done!');
-     }
-    });
+   /* console.log("logininfo",logininfo); */
+
+  
+   User.find({ email:req.body.email,
+    password:req.body.password}, function (err, User) {
+        if(err || User.length == 0){
+        console.log("Incorrect password and email");
+       alert("Incorrect password and email");
+    }
+    else{
+        console.log("successfully logged in ", User);
+        res.redirect('/login');
+    }
+});
+ 
+ 
 })
 app.get('/signup',function(req,res){
     res.render('signup');
@@ -53,18 +62,22 @@ app.post('/signup', function(req,res){
  var info = {
      name:  req.body.name,
      email: req.body.email,
-     pass: req.body.password,
+     password: req.body.password,
      phone: req.body.phone
    };
-   var detalis = new comments(info);
+   var detalis = new User(info);
    detalis.save(function(err){
     if (err){
         console.log('error occured');
     }else{
-        console.log('done!');
+        console.log(info);
     }
 });
+res.redirect('/signup');
 });
+
+
+
 app.get('/login',function(req,res){
 res.render('login')
 })
